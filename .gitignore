@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.env
+.qaicu-dev-data.json
+*.tsbuildinfo
