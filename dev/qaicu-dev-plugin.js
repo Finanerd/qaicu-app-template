@@ -12,8 +12,9 @@
 //
 //   mock (default)  answered from .qaicu-dev-data.json in this folder. No Qaicu
 //                   needed, data survives restarts, `npm run dev:reset` empties it.
-//   live            Set QAICU_URL + QAICU_API_KEY in .env and the same operations
-//                   run against a real Qaicu with that API key. Real datasets.
+//   live            Set QAICU_API_KEY in .env and the same operations run against
+//                   Qaicu with that API key. Real datasets. (QAICU_URL overrides
+//                   the address, https://app.qaicu.ai by default.)
 //
 // QDB.settings and QDB.userSettings are kept in .qaicu-dev-data.json in both
 // modes. Not stood in: the consent prompt (the real host asks the person the
@@ -30,10 +31,12 @@ export const DEV_DATA_FILE = resolve(process.cwd(), '.qaicu-dev-data.json');
 const QDB_PATH = '/__qaicu/qdb';
 const API_PREFIX = '/api/external/';
 const DEFAULT_LATENCY_MS = 120;
+const DEFAULT_URL = 'https://app.qaicu.ai';
 
 /** @param {{url?: string, apiKey?: string, companyId?: string, latencyMs?: string, chrome?: string, title?: string}} options */
 export function qaicuDev(options = {}) {
-  const live = Boolean(options.url && options.apiKey);
+  const live = Boolean(options.apiKey);
+  const url = options.url || DEFAULT_URL;
   const latencyMs = clampLatency(options.latencyMs);
   const showChrome = options.chrome !== '0' && options.chrome !== 'false';
   const title = options.title || readAppTitle();
@@ -52,11 +55,11 @@ export function qaicuDev(options = {}) {
 
     configureServer(server) {
       store = new MockStore(DEV_DATA_FILE);
-      const send = live ? liveBackend(options.url, options.apiKey) : mockBackend(store);
+      const send = live ? liveBackend(url, options.apiKey) : mockBackend(store);
 
       server.config.logger.info(
         live
-          ? `\n  Qaicu bridge: LIVE -> ${options.url} (X-Api-Key from .env)\n`
+          ? `\n  Qaicu bridge: LIVE -> ${url} (X-Api-Key from .env)\n`
           : `\n  Qaicu bridge: MOCK -> ${relativeToCwd(DEV_DATA_FILE)}  (npm run dev:reset to empty)\n`,
       );
 
@@ -85,7 +88,7 @@ export function qaicuDev(options = {}) {
               {
                 tag: 'script',
                 injectTo: 'body',
-                children: chromeScript({ title, live, url: options.url }),
+                children: chromeScript({ title, live, url }),
               },
             ]
           : []),

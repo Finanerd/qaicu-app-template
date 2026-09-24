@@ -19,7 +19,7 @@ with your own description at the end:
 
 `AGENTS.md` tells the agent how to build the app: which components and data
 hooks to use, what breaks the build and how to deploy. When it is time to deploy,
-the agent will ask you for a deploy key (see [Deploying](#deploying)).
+the agent gives you a link to Qaicu where you create the app and copy its key.
 
 ## Start by hand
 
@@ -77,26 +77,30 @@ the short delay before the bridge is ready. It has two modes:
 
 - **Mock** (default): data is stored in `.qaicu-dev-data.json`. You don't need a
   Qaicu instance, the data survives restarts, and `npm run dev:reset` clears it.
-- **Live**: set `QAICU_URL` and `QAICU_API_KEY` in `.env`, and the same calls go
-  to a real Qaicu using that key.
+- **Live**: set `QAICU_API_KEY` in `.env`, and the same calls go to Qaicu
+  using that key.
 
 The plugin only runs in the dev server and is not part of the build.
 
 ## Deploying
 
 ```
-cp .env.example .env      # fill in QAICU_URL and QAICU_DEPLOY_KEY
 npm run check             # typecheck + tests
 npm run deploy
 ```
 
-Each deploy key belongs to one app and can only add new versions to it. To get
-one for a new app, go to Settings → Apps → Add app → Import with the deploy tool
-in Qaicu. Give the app a name and a place in the navigation, and Qaicu shows you
-the key. For an existing app, open its settings and choose Edit → Create deploy
-key. Creating a new key replaces the old one.
+The first deploy opens Qaicu in your browser, in the dialog that creates the
+app. Pick a place for it in the navigation, press "Copy key" and paste the key
+into the terminal. It is saved to `.env`, and later deploys use it without
+asking.
+
+Each deploy key belongs to one app and can only add new versions to it. If you
+need a new one, open the app's settings in Qaicu and choose Edit → Create deploy
+key. The new key replaces the old one.
 
 - `npm run deploy` builds the app and adds a new version.
+- `npm run deploy -- --name "Sales pipeline"` sets the name Qaicu suggests when
+  it creates the app. Without it, the name comes from `package.json`.
 - `npm run deploy -- --no-build` deploys what is already in `dist/`.
 - `npm run deploy -- --dry-run` builds and reports without sending anything.
 

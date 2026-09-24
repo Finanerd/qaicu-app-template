@@ -215,19 +215,28 @@ the same `window.QDB` bridge and the same operations, answered from
 `.qaicu-dev-data.json`. `npm run dev:reset` empties it. It does not ask for
 dataset consent and does not run reports.
 
-Set `QAICU_URL` + `QAICU_API_KEY` in `.env` and the same operations go to a real
-Qaicu instead — same code path, real datasets.
+Set `QAICU_API_KEY` in `.env` and the same operations go to a real Qaicu
+instead — same code path, real datasets.
 
 ## Deploying
 
 ```
-npm run deploy                  # build, then add a version to the key's app
-npm run deploy -- --dry-run     # build and report, send nothing
+npm run deploy -- --name "Sales pipeline"   # build, then add a version to the key's app
+npm run deploy -- --dry-run                 # build and report, send nothing
 ```
 
-Needs `QAICU_URL` and `QAICU_DEPLOY_KEY` in `.env` (copy `.env.example`). The key
-belongs to one app: create it in Qaicu with Settings > Apps > Add app > "Import
-with the deploy tool" (or in an existing app's settings: edit > Create deploy key).
+The deploy needs `QAICU_DEPLOY_KEY` in `.env`. The key belongs to one app. When
+the user asks you to deploy and there is no key yet:
+
+1. Run `npm run deploy -- --name "<the app's name>"`. With no key it prints a
+   Qaicu link, tries to open it in the browser, and stops.
+2. Give the user that link. It opens the dialog that creates the app with the
+   name filled in (Qaicu asks for the company first if they have several) and
+   shows the key. Ask them to press "Copy key" and paste it to you.
+3. Write it to `.env` as `QAICU_DEPLOY_KEY=<key>` and run `npm run deploy` again.
+
+If Qaicu rejects the key, the app's settings in Qaicu (Edit > Create deploy key)
+give a new one; it replaces the old key.
 
 The deploy sends the built page only, never the source. This repository is where
 this app's code lives and is changed; Qaicu shows no "edit" for an app that

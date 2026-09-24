@@ -12,8 +12,7 @@ import { qaicuDev } from './dev/qaicu-dev-plugin.js';
 //
 // `qaicuDev` only applies to `vite dev`: it stands in for the Qaicu host by
 // injecting the same `window.QDB` bridge the real frame provides and running its
-// operations against a local mock (or a real Qaicu when QAICU_URL +
-// QAICU_API_KEY are set). It contributes nothing to the build.
+// operations against a local mock (or a real Qaicu when QAICU_API_KEY is set). It contributes nothing to the build.
 export default defineConfig(({ mode }) => {
   // '' as the prefix loads every var in .env, not just VITE_*. Nothing here is
   // exposed to the client bundle — the values are used by the dev server only.
